@@ -1,9 +1,55 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import logo from './assets/logo.png';
+import * as ImagePicker from 'expo-image-picker';
+import * as Sharing from 'expo-sharing';
+
 
 export default function App() {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+
+  let openImagePicker = async () => {
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if(permissionResult.granted === false){
+      alert('permission to access camera roll is required!');
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    if(pickerResult.cancelled === true){
+      return;
+    }
+    
+    setSelectedImage({ localUri: pickerResult.uri});
+
+
+
+  };
+
+  let openShareDialogAsync = async () => {
+    if (!(await Sharing.isAvailableAsync())){
+      alert('uh oh sharing isnt availibe on your platfrom');
+      return;
+    }
+    await Sharing.shareAsync(selectedImage.localUri);
+  }
+
+  if (selectedImage !== null) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={{ uri: selectedImage.localUri }}
+          style={styles.thumbnail}
+        />
+        <TouchableOpacity onPress={openShareDialogAsync} style={styles.button}>
+          <Text style={styles.buttonStyle}>Share this photo!</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logo} />
@@ -11,8 +57,8 @@ export default function App() {
 
 
       <TouchableOpacity
-      onPress={() => alert('hello world')}
-      style={{backgroundColor: 'blue',  borderRadius: 25}}>
+      onPress={openImagePicker}
+      style={styles.button}>
         <Text style={styles.buttonStyle}> Pick a photo! </Text>
         </TouchableOpacity>
       <StatusBar style="auto" />
@@ -42,5 +88,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#fff',
 
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 20,
+    borderRadius: 5
+  },
+  thumbnail: {
+    width: 300,
+    height: 300,
+    resizeMode: "contain"
   }
 });
