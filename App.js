@@ -8,6 +8,13 @@ export default function App() {
     <View style={styles.container}>
       <Image source={logo} style={styles.logo} />
       <Text style={styles.instructions}>To share a photo from your phone wqith a friend press the button beloew!</Text>
+
+
+      <TouchableOpacity
+      onPress={() => alert('hello world')}
+      style={{backgroundColor: 'blue',  borderRadius: 25}}>
+        <Text style={styles.buttonStyle}> Pick a photo! </Text>
+        </TouchableOpacity>
       <StatusBar style="auto" />
     </View>
   );
@@ -30,5 +37,10 @@ const styles = StyleSheet.create({
     color: "blue",
     fontSize: 18,
     marginHorizontal: 15,
+  },
+  buttonStyle: {
+    fontSize: 20,
+    color: '#fff',
+
   }
 });
